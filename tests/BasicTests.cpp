@@ -66,6 +66,7 @@ TEST_F(IoUringTest, SmallWrite) {
   ASSERT_TRUE(std::all_of(buffer.begin(), buffer.end(), [](const auto& a) {
     return a == 'A';
   })) << buffer;
+  fclose(fp);
 }
 
 TEST_F(IoUringTest, ChunkedWrite) {
@@ -78,4 +79,5 @@ TEST_F(IoUringTest, ChunkedWrite) {
   ASSERT_TRUE(std::all_of(buffer.begin(), buffer.end(), [](const auto& a) {
     return a == 'A';
   })) << buffer;
+  fclose(fp);
 }

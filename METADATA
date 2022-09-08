@@ -1,0 +1,13 @@
+name: "liuring_cpp"
+description:
+    "liuring_cpp is a C++ wrapper for liburing"
+
+third_party {
+  url {
+    type: GIT
+    value: "https://github.com/google/liburing_cpp"
+  }
+  version: "95bd753644602734b165615af8c0ca44abf6c4d0"
+  last_upgrade_date { year: 2022 month: 9 day: 8 }
+  license_type: NOTICE
+}

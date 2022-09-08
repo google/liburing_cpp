@@ -16,6 +16,8 @@
 
 #include <liburing_cpp/IoUringSQE.h>
 
+#include <cstdint>
+
 #include "liburing.h"
 
 namespace io_uring_cpp {
@@ -23,6 +25,14 @@ namespace io_uring_cpp {
 IoUringSQE &IoUringSQE::SetFlags(unsigned int flags) {
   if (IsOk()) {
     ::io_uring_sqe_set_flags(static_cast<struct io_uring_sqe *>(sqe), flags);
+  }
+  return *this;
+}
+
+IoUringSQE &IoUringSQE::SetData(uint64_t data) {
+  if (IsOk()) {
+    ::io_uring_sqe_set_data(static_cast<struct io_uring_sqe *>(sqe),
+                            reinterpret_cast<void *>(data));
   }
   return *this;
 }

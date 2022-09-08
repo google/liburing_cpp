@@ -19,9 +19,8 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
+#include <type_traits>
 #include <vector>
-
-#include "BufferView.h"
 
 #ifndef __IO_URING_SQE_CPP_H
 #define __IO_URING_SQE_CPP_H
@@ -57,10 +56,21 @@ std::ostream &operator<<(std::ostream &, Errno err);
 struct [[nodiscard]] IoUringSQE {
   constexpr IoUringSQE(void *p) : sqe(p) {}
   IoUringSQE &SetFlags(unsigned int flags);
+  template <typename T>
+  IoUringSQE &SetData(const T &data) {
+    static_assert(
+        std::is_trivially_copy_constructible_v<T>,
+        "Only trivially copiable types can be passed for io_uring data");
+    static_assert(sizeof(T) <= 8,
+                  "io_uring SQE's data field has size of 8 bytes, can't pass "
+                  "data larger than that.");
+    return SetData(*reinterpret_cast<const uint64_t*>(&data));
+  }
 
   constexpr bool IsOk() const { return sqe != nullptr; }
 
  private:
+  IoUringSQE &SetData(uint64_t data);
   void *sqe;
 };
 

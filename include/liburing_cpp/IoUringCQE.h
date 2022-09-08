@@ -19,11 +19,29 @@
 
 #include <stdint.h>
 
+#include <type_traits>
+
 namespace io_uring_cpp {
 
 struct IoUringCQE {
   int32_t res;
   uint32_t flags;
+  template <typename T>
+  T GetData() {
+    static_assert(
+        std::is_trivially_copy_constructible_v<T>,
+        "Only trivially copiable types can be passed for io_uring data");
+    static_assert(sizeof(T) <= 8,
+                  "io_uring SQE's data field has size of 8 bytes, can't pass "
+                  "data larger than that.");
+    return *reinterpret_cast<const T*>(&userdata);
+  }
+
+  constexpr IoUringCQE(int32_t res, uint32_t flags, uint64_t userdata)
+      : res(res), flags(flags), userdata(userdata) {}
+
+ private:
+  uint64_t userdata;
 };
 
 }  // namespace io_uring_cpp

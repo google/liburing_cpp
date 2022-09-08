@@ -22,7 +22,6 @@
 #include <memory>
 
 #include "liburing.h"
-#include "liburing/io_uring.h"
 
 namespace io_uring_cpp {
 
@@ -78,7 +77,7 @@ class IoUring final : public IoUringInterface {
     if (ret != 0) {
       return {Errno(ret)};
     }
-    const auto cqe = IoUringCQE{.res = ptr->res, .flags = ptr->flags};
+    const auto cqe = IoUringCQE(ptr->res, ptr->flags, ptr->user_data);
     io_uring_cqe_seen(&ring, ptr);
     return {cqe};
   }
@@ -89,7 +88,7 @@ class IoUring final : public IoUringInterface {
     if (ret != 0) {
       return {Errno(ret)};
     }
-    return {IoUringCQE{.res = ptr->res, .flags = ptr->flags}};
+    return {IoUringCQE(ptr->res, ptr->flags, ptr->user_data)};
   }
 
   IoUring(struct io_uring r) : ring(r) {}

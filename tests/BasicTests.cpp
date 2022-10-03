@@ -78,7 +78,10 @@ TEST_F(IoUringTest, SmallWrite) {
   const auto cqe = ring->PopCQE();
   ASSERT_TRUE(cqe.IsOk()) << cqe.GetError();
 
-  pread(fd, buffer.data(), buffer.size(), 0);
+  const auto bytes_read = pread(fd, buffer.data(), buffer.size(), 0);
+
+  ASSERT_EQ(bytes_read, buffer.size());
+
   ASSERT_TRUE(std::all_of(buffer.begin(), buffer.end(), [](const auto& a) {
     return a == 'A';
   })) << buffer;
@@ -91,7 +94,10 @@ TEST_F(IoUringTest, ChunkedWrite) {
   std::string buffer(16 * 1024 * 1024, 'A');
   ASSERT_NO_FATAL_FAILURE(Write(fd, buffer.data(), buffer.size()));
 
-  pread(fd, buffer.data(), buffer.size(), 0);
+  const auto bytes_read = pread(fd, buffer.data(), buffer.size(), 0);
+
+  ASSERT_EQ(bytes_read, buffer.size());
+
   ASSERT_TRUE(std::all_of(buffer.begin(), buffer.end(), [](const auto& a) {
     return a == 'A';
   })) << buffer;
